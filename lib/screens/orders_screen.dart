@@ -1,10 +1,14 @@
+import 'package:ecommerce_admin/controllers/order_controller.dart';
 import 'package:ecommerce_admin/models/order_models.dart';
 import 'package:ecommerce_admin/models/product_models.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class OrdersScreen extends StatelessWidget {
-  const OrdersScreen({Key? key}) : super(key: key);
+  OrdersScreen({Key? key}) : super(key: key);
+
+  final OrderController orderController = Get.put(OrderController());
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +20,13 @@ class OrdersScreen extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
-                itemCount: Order.orders.length,
-                itemBuilder: (BuildContext context, int index) => OrderCard(
-                      order: Order.orders[index],
-                    )),
+            child: Obx(
+              () => ListView.builder(
+                  itemCount: orderController.pendingOrders.length,
+                  itemBuilder: (BuildContext context, int index) => OrderCard(
+                        order: orderController.pendingOrders[index],
+                      )),
+            ),
           ),
         ],
       ),
@@ -30,7 +36,9 @@ class OrdersScreen extends StatelessWidget {
 
 class OrderCard extends StatelessWidget {
   final Order order;
-  const OrderCard({Key? key, required this.order}) : super(key: key);
+  OrderCard({Key? key, required this.order}) : super(key: key);
+
+  final OrderController orderController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -156,17 +164,36 @@ class OrderCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
+                  order.isAccepted
+                      ? ElevatedButton(
+                          onPressed: () {
+                            orderController.updateOrder(
+                                order, 'isDelivered', !order.isDelivered);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(150, 40),
+                          ),
+                          child: const Text(
+                            "Delivered",
+                            style: TextStyle(fontSize: 12),
+                          ))
+                      : ElevatedButton(
+                          onPressed: () {
+                            orderController.updateOrder(
+                                order, 'isAccepted', !order.isAccepted);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(150, 40),
+                          ),
+                          child: const Text(
+                            "Accept",
+                            style: TextStyle(fontSize: 12),
+                          )),
                   ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: const Size(150, 40),
-                      ),
-                      child: const Text(
-                        "Accept",
-                        style: TextStyle(fontSize: 12),
-                      )),
-                  ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        orderController.updateOrder(
+                            order, 'isCancelled', !order.isCancelled);
+                      },
                       child: const Text(
                         "Cancel",
                         style: TextStyle(fontSize: 12),

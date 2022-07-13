@@ -33,7 +33,7 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: InkWell(
               onTap: () {
-                Get.to(() => const OrdersScreen());
+                Get.to(() => OrdersScreen());
               },
               child: const Card(child: Center(child: Text("Go To Orders"))),
             ),
